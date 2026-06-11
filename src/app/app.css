@@ -1,0 +1,20 @@
+:host {
+  display: block;
+}
+
+.postify-spinner {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 9999px;
+  border: 6px solid rgba(251, 146, 60, 0.22);
+  border-top-color: #f97316;
+  border-right-color: #ea580c;
+  animation: postify-spin 0.9s linear infinite;
+  box-shadow: 0 0 0 10px rgba(255, 237, 213, 0.65);
+}
+
+@keyframes postify-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

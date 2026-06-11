@@ -1,0 +1,87 @@
+<form [formRoot]="commentForm" class="space-y-5" (submit)="submitComment($event)">
+  <div>
+    <label for="comment-post" class="mb-2 block text-sm font-semibold text-slate-700">Post</label>
+    <select
+      id="comment-post"
+      [formField]="commentForm.postId"
+      class="w-full rounded-[1.2rem] border border-stone-300 bg-stone-50/80 px-4 py-3.5 text-slate-900 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+    >
+      @for (post of posts(); track post.id) {
+        <option [value]="post.id">{{ post.title }}</option>
+      }
+    </select>
+    @if (commentForm.postId().touched() && commentForm.postId().invalid()) {
+      <ul class="mt-2 space-y-1 text-sm text-rose-600">
+        @for (error of commentForm.postId().errors(); track error.kind) {
+          <li>{{ error.message }}</li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div>
+    <label for="comment-name" class="mb-2 block text-sm font-semibold text-slate-700">Name</label>
+    <input
+      id="comment-name"
+      type="text"
+      [formField]="commentForm.name"
+      class="w-full rounded-[1.2rem] border border-stone-300 bg-stone-50/80 px-4 py-3.5 text-slate-900 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+      placeholder="Your name"
+    />
+    @if (commentForm.name().touched() && commentForm.name().invalid()) {
+      <ul class="mt-2 space-y-1 text-sm text-rose-600">
+        @for (error of commentForm.name().errors(); track error.kind) {
+          <li>{{ error.message }}</li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div>
+    <label for="comment-email" class="mb-2 block text-sm font-semibold text-slate-700">Email</label>
+    <input
+      id="comment-email"
+      type="email"
+      [formField]="commentForm.email"
+      class="w-full rounded-[1.2rem] border border-stone-300 bg-stone-50/80 px-4 py-3.5 text-slate-900 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+      placeholder="name@example.com"
+    />
+    @if (commentForm.email().touched() && commentForm.email().invalid()) {
+      <ul class="mt-2 space-y-1 text-sm text-rose-600">
+        @for (error of commentForm.email().errors(); track error.kind) {
+          <li>{{ error.message }}</li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div>
+    <label for="comment-body" class="mb-2 block text-sm font-semibold text-slate-700">Comment</label>
+    <textarea
+      id="comment-body"
+      [formField]="commentForm.body"
+      rows="5"
+      class="w-full rounded-[1.2rem] border border-stone-300 bg-stone-50/80 px-4 py-3.5 text-slate-900 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+      placeholder="Add something thoughtful to the conversation"
+    ></textarea>
+    @if (commentForm.body().touched() && commentForm.body().invalid()) {
+      <ul class="mt-2 space-y-1 text-sm text-rose-600">
+        @for (error of commentForm.body().errors(); track error.kind) {
+          <li>{{ error.message }}</li>
+        }
+      </ul>
+    }
+  </div>
+
+  <button
+    type="submit"
+    [disabled]="commentForm().submitting()"
+    class="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_40px_-18px_rgba(79,70,229,0.85)] transition duration-200 hover:-translate-y-0.5 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+  >
+    @if (commentForm().submitting()) {
+      Posting comment...
+    } @else {
+      Add comment
+    }
+  </button>
+</form>

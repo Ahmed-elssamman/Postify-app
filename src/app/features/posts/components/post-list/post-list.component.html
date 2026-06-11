@@ -1,0 +1,95 @@
+<section class="animate-[fade-in_0.6s_ease-out]">
+  <div class="mx-auto max-w-4xl text-center">
+    <p class="mb-4 text-sm font-semibold uppercase tracking-[0.28em] text-orange-500">Postify feed</p>
+    <h1 class="font-serif text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+      Ideas worth sharing
+    </h1>
+    <p class="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
+      Discover thoughtful posts, follow the signal, and dive into details that make each idea stick.
+    </p>
+  </div>
+
+  <div class="mx-auto mt-10 max-w-4xl">
+    <label class="group flex items-center gap-4 rounded-4xl border border-stone-300/80 bg-white/90 px-5 py-4 shadow-[0_20px_45px_-32px_rgba(15,23,42,0.35)] transition focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-100">
+      <span class="text-xl text-slate-400 transition group-focus-within:text-indigo-600">Search</span>
+      <input
+        type="search"
+        [value]="searchTerm()"
+        (input)="updateSearchTerm(($any($event.target)).value)"
+        class="w-full border-0 bg-transparent text-base text-slate-700 outline-none placeholder:text-slate-400"
+        placeholder="Search posts by title"
+        aria-label="Search posts by title"
+      />
+    </label>
+  </div>
+
+  <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <p class="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
+      {{ filteredPosts().length }} of {{ posts().length }} posts
+    </p>
+
+    @if (searchTerm()) {
+      <button
+        type="button"
+        (click)="clearSearch()"
+        class="self-start rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-indigo-300 hover:text-indigo-700"
+      >
+        Clear search
+      </button>
+    }
+  </div>
+
+ @if (!posts().length) {
+    <div class="mt-10 rounded-4xl border border-stone-200 bg-white/85 p-8 text-center shadow-sm">
+      <h2 class="font-serif text-3xl font-semibold text-slate-900">No posts available right now.</h2>
+      <p class="mx-auto mt-3 max-w-xl text-slate-600">
+        There is nothing to show in the feed yet. Try reloading the posts in a moment.
+      </p>
+    </div>
+  } @else if (!filteredPosts().length) {
+    <div class="mt-10 rounded-4xl border border-stone-200 bg-white/85 p-8 text-center shadow-sm">
+      <h2 class="font-serif text-3xl font-semibold text-slate-900">No posts match that search.</h2>
+      <p class="mx-auto mt-3 max-w-xl text-slate-600">
+        Try a different phrase or clear the search to explore the full Postify feed again.
+      </p>
+      <button
+        type="button"
+        (click)="clearSearch()"
+        class="mt-6 rounded-full border border-stone-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700"
+      >
+        Reset search
+      </button>
+    </div>
+  } @else {
+    <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      @for (post of filteredPosts(); track post.id; let index = $index) {
+        <article class="group flex h-full flex-col rounded-4xl border border-stone-200/90 bg-white/90 p-6 shadow-[0_24px_50px_-36px_rgba(15,23,42,0.42)] transition duration-200 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-[0_28px_60px_-34px_rgba(79,70,229,0.32)]">
+          <div class="flex items-center justify-between text-sm">
+            <span class="font-serif text-4xl font-bold leading-none text-indigo-600">
+              {{ formatPostNumber(index) }}
+            </span>
+            <span class="rounded-full bg-stone-100 px-3 py-1 font-medium text-slate-600">
+              User {{ post.userId }}
+            </span>
+          </div>
+
+          <h2 class="mt-6 font-serif text-3xl font-semibold leading-tight text-slate-900">
+            {{ post.title }}
+          </h2>
+
+          <p class="mt-4 flex-1 text-base leading-8 text-slate-600">
+            {{ post.body }}
+          </p>
+
+          <a
+            [routerLink]="['/posts', post.id]"
+            class="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-indigo-700 transition group-hover:gap-3"
+          >
+            View details
+            <span aria-hidden="true">-></span>
+          </a>
+        </article>
+      }
+    </div>
+  }
+</section>
