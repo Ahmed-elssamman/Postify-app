@@ -6,7 +6,6 @@ export interface CreateComment {
 }
 
 export interface AddCommentFormValue {
-  postId: string;
   name: string;
   email: string;
   body: string;

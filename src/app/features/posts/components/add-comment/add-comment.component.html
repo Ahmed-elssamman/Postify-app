@@ -1,6 +1,8 @@
-<form [formRoot]="commentForm" class="space-y-5" (submit)="submitComment($event)">
+<form class="space-y-5" (ngSubmit)="submitComment()">
   <p class="rounded-4xl border border-stone-200 bg-stone-50/80 px-4 py-3 text-sm text-slate-600">
-    Your comment will be added to post <span class="font-semibold text-slate-900">#{{ currentPostId() }}</span>.
+    Your comment will be added to post
+    <span class="font-semibold text-slate-900">#{{ currentPostId() }}</span
+    >.
   </p>
 
   <div>
@@ -13,11 +15,10 @@
       placeholder="Your name"
     />
     @if (commentForm.name().touched() && commentForm.name().invalid()) {
-      <ul class="mt-2 space-y-1 text-sm text-rose-600">
-        @for (error of commentForm.name().errors(); track error.kind) {
-          <li>{{ error.message }}</li>
-        }
-      </ul>
+      <ng-container
+        [ngTemplateOutlet]="validationErrors"
+        [ngTemplateOutletContext]="{ errors: commentForm.name().errors() }"
+      ></ng-container>
     }
   </div>
 
@@ -31,16 +32,17 @@
       placeholder="name@example.com"
     />
     @if (commentForm.email().touched() && commentForm.email().invalid()) {
-      <ul class="mt-2 space-y-1 text-sm text-rose-600">
-        @for (error of commentForm.email().errors(); track error.kind) {
-          <li>{{ error.message }}</li>
-        }
-      </ul>
+      <ng-container
+        [ngTemplateOutlet]="validationErrors"
+        [ngTemplateOutletContext]="{ errors: commentForm.email().errors() }"
+      ></ng-container>
     }
   </div>
 
   <div>
-    <label for="comment-body" class="mb-2 block text-sm font-semibold text-slate-700">Comment</label>
+    <label for="comment-body" class="mb-2 block text-sm font-semibold text-slate-700"
+      >Comment</label
+    >
     <textarea
       id="comment-body"
       [formField]="commentForm.body"
@@ -49,23 +51,30 @@
       placeholder="Add something thoughtful to the conversation"
     ></textarea>
     @if (commentForm.body().touched() && commentForm.body().invalid()) {
-      <ul class="mt-2 space-y-1 text-sm text-rose-600">
-        @for (error of commentForm.body().errors(); track error.kind) {
-          <li>{{ error.message }}</li>
-        }
-      </ul>
+      <ng-container
+        [ngTemplateOutlet]="validationErrors"
+        [ngTemplateOutletContext]="{ errors: commentForm.body().errors() }"
+      ></ng-container>
     }
   </div>
 
   <button
     type="submit"
-    [disabled]="commentForm().submitting()"
+    [disabled]="isSubmitting()"
     class="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_40px_-18px_rgba(79,70,229,0.85)] transition duration-200 hover:-translate-y-0.5 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
   >
-    @if (commentForm().submitting()) {
+    @if (isSubmitting()) {
       Posting comment...
     } @else {
       Add comment
     }
   </button>
 </form>
+
+<ng-template #validationErrors let-errors="errors">
+  <ul class="mt-2 space-y-1 text-sm text-rose-600">
+    @for (error of errors; track error.kind) {
+      <li>{{ error.message }}</li>
+    }
+  </ul>
+</ng-template>

@@ -1,6 +1,8 @@
-<section class="animate-[fade-in_0.6s_ease-out]">
+<section>
   <div class="mx-auto max-w-4xl text-center">
-    <p class="mb-4 text-sm font-semibold uppercase tracking-[0.28em] text-orange-500">Postify feed</p>
+    <p class="mb-4 text-sm font-semibold uppercase tracking-[0.28em] text-orange-500">
+      Postify feed
+    </p>
     <h1 class="font-serif text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl">
       Ideas worth sharing
     </h1>
@@ -10,12 +12,17 @@
   </div>
 
   <div class="mx-auto mt-10 max-w-4xl">
-    <label class="group flex items-center gap-4 rounded-4xl border border-stone-300/80 bg-white/90 px-5 py-4 shadow-[0_20px_45px_-32px_rgba(15,23,42,0.35)] transition focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-100">
-      <span class="text-xl text-slate-400 transition group-focus-within:text-indigo-600">Search</span>
+    <label
+      class="group flex items-center gap-4 rounded-4xl border border-stone-300/80 bg-white/90 px-5 py-4 shadow-[0_20px_45px_-32px_rgba(15,23,42,0.35)] transition focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-100"
+    >
+      <span class="text-xl text-slate-400 transition group-focus-within:text-indigo-600"
+        >Search</span
+      >
       <input
         type="search"
-        [value]="searchTerm()"
-        (input)="updateSearchTerm(($any($event.target)).value)"
+        name="search"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="updateSearchTerm($event)"
         class="w-full border-0 bg-transparent text-base text-slate-700 outline-none placeholder:text-slate-400"
         placeholder="Search posts by title"
         aria-label="Search posts by title"
@@ -38,10 +45,11 @@
       </button>
     }
   </div>
-
  @if (!posts().length) {
     <div class="mt-10 rounded-4xl border border-stone-200 bg-white/85 p-8 text-center shadow-sm">
-      <h2 class="font-serif text-3xl font-semibold text-slate-900">No posts available right now.</h2>
+      <h2 class="font-serif text-3xl font-semibold text-slate-900">
+        No posts available right now.
+      </h2>
       <p class="mx-auto mt-3 max-w-xl text-slate-600">
         There is nothing to show in the feed yet. Try reloading the posts in a moment.
       </p>
@@ -62,8 +70,10 @@
     </div>
   } @else {
     <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      @for (post of filteredPosts(); track post.id; let index = $index) {
-        <article class="group flex h-full flex-col rounded-4xl border border-stone-200/90 bg-white/90 p-6 shadow-[0_24px_50px_-36px_rgba(15,23,42,0.42)] transition duration-200 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-[0_28px_60px_-34px_rgba(79,70,229,0.32)]">
+      @for (post of visiblePosts(); track post.id; let index = $index) {
+        <article
+          class="group flex h-full flex-col rounded-4xl border border-stone-200/90 bg-white/90 p-6 shadow-[0_24px_50px_-36px_rgba(15,23,42,0.42)] transition duration-200 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-[0_28px_60px_-34px_rgba(79,70,229,0.32)]"
+        >
           <div class="flex items-center justify-between text-sm">
             <span class="font-serif text-4xl font-bold leading-none text-indigo-600">
               {{ formatPostNumber(index) }}
@@ -91,5 +101,47 @@
         </article>
       }
     </div>
+
+    @if (totalPages() > 1) {
+      <nav
+        class="mt-10 flex flex-wrap items-center justify-center gap-2"
+        aria-label="Posts pagination"
+      >
+        <button
+          type="button"
+          (click)="previousPage()"
+          [disabled]="currentPage() === 1"
+          class="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Previous
+        </button>
+
+        @for (page of pageNumbers(); track page) {
+          <button
+            type="button"
+            (click)="goToPage(page)"
+            [attr.aria-current]="page === currentPage() ? 'page' : null"
+            [class.bg-indigo-600]="page === currentPage()"
+            [class.border-indigo-600]="page === currentPage()"
+            [class.text-white]="page === currentPage()"
+            [class.bg-white]="page !== currentPage()"
+            [class.border-stone-300]="page !== currentPage()"
+            [class.text-slate-700]="page !== currentPage()"
+            class="h-10 w-10 rounded-full border text-sm font-semibold transition hover:border-indigo-300"
+          >
+            {{ page }}
+          </button>
+        }
+
+        <button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="currentPage() === totalPages()"
+          class="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Next
+        </button>
+      </nav>
+    }
   }
 </section>

@@ -5,7 +5,7 @@ import { CreateComment } from '../models/create-comment.model';
 import { CreatePost } from '../models/create-post.model';
 import { Comment } from '../models/comment.model';
 import { Post } from '../models/post.model';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {

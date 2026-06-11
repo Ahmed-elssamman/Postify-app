@@ -1,53 +1,63 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { FormField, form, minLength, required } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
-import { FormField, FormRoot, form, minLength, required, submit } from '@angular/forms/signals';
-import { PostsService } from '../../services/posts.service';
+import { finalize } from 'rxjs';
 import { CreatePostFormValue } from '../../models/create-post.model';
+import { PostsService } from '../../services/posts.service';
 
 @Component({
   selector: 'app-add-post',
-  imports: [RouterLink, FormField, FormRoot],
+  imports: [RouterLink, FormsModule, FormField, NgTemplateOutlet],
   templateUrl: './add-post.component.html',
-  styleUrl: './add-post.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddPostComponent {
   private readonly postsService = inject(PostsService);
   private readonly router = inject(Router);
   private readonly toastr = inject(ToastrService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly postModel = signal<CreatePostFormValue>({
     title: '',
     body: '',
   });
+  readonly isSubmitting = signal(false);
 
   readonly postForm = form(this.postModel, (path) => {
     required(path.title, { message: 'Title is required.' });
-    minLength(path.title, 5, { message: 'Title must be at least 5 characters.' });
+    minLength(path.title, 3, { message: 'Title must be at least 3 characters.' });
     required(path.body, { message: 'Body is required.' });
-    minLength(path.body, 10, { message: 'Body must be at least 10 characters.' });
   });
 
-  submitPost(event: Event): void {
-    event.preventDefault();
+  submitPost(): void {
+    if (this.postForm().invalid() || this.isSubmitting()) {
+      this.postForm().markAsTouched();
+      return;
+    }
 
-    void submit(this.postForm, async (formState) => {
-      const value = formState().value();
+    const value = this.postModel();
+    this.isSubmitting.set(true);
 
-      await firstValueFrom(
-        this.postsService.createPost({
-          userId: 1,
-          title: value.title.trim(),
-          body: value.body.trim(),
-        }),
-      );
-
-      this.toastr.success('Post created successfully', 'Postify');
-      this.postForm().reset();
-      this.postModel.set({ title: '', body: '' });
-      await this.router.navigateByUrl('/');
-    });
+    this.postsService
+      .createPost({
+        userId: 1,
+        title: value.title.trim(),
+        body: value.body.trim(),
+      })
+      .pipe(
+        finalize(() => this.isSubmitting.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: () => {
+          this.toastr.success('Post created successfully', 'Postify');
+          this.postForm().reset({ title: '', body: '' });
+          void this.router.navigateByUrl('/');
+        },
+        error: () => {},
+      });
   }
 }

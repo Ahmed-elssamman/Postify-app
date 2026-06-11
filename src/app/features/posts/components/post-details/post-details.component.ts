@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { distinctUntilChanged, forkJoin, map } from 'rxjs';
@@ -6,25 +6,21 @@ import { Comment } from '../../models/comment.model';
 import { Post } from '../../models/post.model';
 import { PostsService } from '../../services/posts.service';
 import { AddCommentComponent } from '../add-comment/add-comment.component';
-import { ErrorService } from '../../../../core/services/error.service';
 
 @Component({
   selector: 'app-post-details',
   imports: [RouterLink, AddCommentComponent],
   templateUrl: './post-details.component.html',
-  styleUrl: './post-details.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PostDetailsComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly postsService = inject(PostsService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly errorService = inject(ErrorService);
 
-  selectedPost = signal<Post | null>(null);
-  comments = signal<Comment[]>([]);
-  currentPostId = signal(0);
-  hasError = signal(this.errorService.hasError());
+  readonly selectedPost = signal<Post | null>(null);
+  readonly comments = signal<Comment[]>([]);
+  readonly currentPostId = signal(0);
+  readonly hasError = signal(false);
 
   constructor() {
     this.route.paramMap
@@ -38,6 +34,7 @@ export class PostDetailsComponent {
           this.selectedPost.set(null);
           this.comments.set([]);
           this.currentPostId.set(0);
+          this.hasError.set(true);
           return;
         }
 
@@ -46,24 +43,31 @@ export class PostDetailsComponent {
   }
 
   loadPost(postId: number): void {
+    this.hasError.set(false);
     this.currentPostId.set(postId);
-
     forkJoin({
       post: this.postsService.getPostById(postId),
       comments: this.postsService.getCommentsByPostId(postId),
     })
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ post, comments }) => {
           this.selectedPost.set(post);
           this.comments.set(comments);
+        },
+        error: () => {
+          this.hasError.set(true);
         },
       });
   }
 
   handleCommentCreated(comment: Comment): void {
     if (comment.postId === this.currentPostId()) {
-      this.comments.update((comments) => [comment, ...comments]);
+      this.postsService.createComment(comment).subscribe({
+        next: () => {
+          this.comments.update((comments) => [comment, ...comments]);
+        }
+      });
     }
   }
 }

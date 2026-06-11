@@ -1,10 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,700&display=swap');
 @import 'tailwindcss';
 @import 'ngx-toastr/toastr';
 
 :root {
-  --font-sans: 'Manrope', sans-serif;
-  --font-serif: 'Newsreader', serif;
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
 }
 
 html {
