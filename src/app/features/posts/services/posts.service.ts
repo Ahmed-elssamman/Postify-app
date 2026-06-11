@@ -5,11 +5,12 @@ import { CreateComment } from '../models/create-comment.model';
 import { CreatePost } from '../models/create-post.model';
 import { Comment } from '../models/comment.model';
 import { Post } from '../models/post.model';
+import { environment } from '../../../../environments/environment.development';
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {
   private readonly httpClient = inject(HttpClient);
-  private readonly apiUrl = 'https://jsonplaceholder.typicode.com';
+  private readonly apiUrl = environment.baseUrl;
 
   getPosts(): Observable<Post[]> {
     return this.httpClient.get<Post[]>(`${this.apiUrl}/posts`);
