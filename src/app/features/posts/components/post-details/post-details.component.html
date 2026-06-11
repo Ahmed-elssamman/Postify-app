@@ -41,12 +41,11 @@
         <p class="text-sm font-semibold uppercase tracking-[0.28em] text-indigo-700">Join the conversation</p>
         <h2 class="mt-3 font-serif text-3xl font-semibold text-slate-900">Add a comment</h2>
         <p class="mt-3 text-slate-600">
-          Pick a post title from the dropdown, write a thoughtful reply, and Postify will send the selected post ID behind the scenes.
+          Write a thoughtful reply and Postify will send the ID of the post you are viewing automatically.
         </p>
 
         <div class="mt-8">
           <app-add-comment
-            [posts]="availablePosts()"
             [currentPostId]="currentPostId()"
             (commentCreated)="handleCommentCreated($event)"
           />

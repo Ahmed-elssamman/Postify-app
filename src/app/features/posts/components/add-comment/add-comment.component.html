@@ -1,23 +1,7 @@
 <form [formRoot]="commentForm" class="space-y-5" (submit)="submitComment($event)">
-  <div>
-    <label for="comment-post" class="mb-2 block text-sm font-semibold text-slate-700">Post</label>
-    <select
-      id="comment-post"
-      [formField]="commentForm.postId"
-      class="w-full rounded-[1.2rem] border border-stone-300 bg-stone-50/80 px-4 py-3.5 text-slate-900 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
-    >
-      @for (post of posts(); track post.id) {
-        <option [value]="post.id">{{ post.title }}</option>
-      }
-    </select>
-    @if (commentForm.postId().touched() && commentForm.postId().invalid()) {
-      <ul class="mt-2 space-y-1 text-sm text-rose-600">
-        @for (error of commentForm.postId().errors(); track error.kind) {
-          <li>{{ error.message }}</li>
-        }
-      </ul>
-    }
-  </div>
+  <p class="rounded-4xl border border-stone-200 bg-stone-50/80 px-4 py-3 text-sm text-slate-600">
+    Your comment will be added to post <span class="font-semibold text-slate-900">#{{ currentPostId() }}</span>.
+  </p>
 
   <div>
     <label for="comment-name" class="mb-2 block text-sm font-semibold text-slate-700">Name</label>

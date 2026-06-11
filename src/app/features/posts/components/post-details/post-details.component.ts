@@ -23,7 +23,6 @@ export class PostDetailsComponent {
 
   selectedPost = signal<Post | null>(null);
   comments = signal<Comment[]>([]);
-  availablePosts = signal<Post[]>([]);
   currentPostId = signal(0);
   hasError = signal(this.errorService.hasError());
 
@@ -38,7 +37,6 @@ export class PostDetailsComponent {
         if (!Number.isInteger(postId) || postId <= 0) {
           this.selectedPost.set(null);
           this.comments.set([]);
-          this.availablePosts.set([]);
           this.currentPostId.set(0);
           return;
         }
@@ -53,15 +51,13 @@ export class PostDetailsComponent {
     forkJoin({
       post: this.postsService.getPostById(postId),
       comments: this.postsService.getCommentsByPostId(postId),
-      posts: this.postsService.getPosts().pipe(map((posts) => posts.slice(0, 50))),
     })
       .pipe(takeUntilDestroyed())
       .subscribe({
-        next: ({ post, comments, posts }) => {
+        next: ({ post, comments }) => {
           this.selectedPost.set(post);
           this.comments.set(comments);
-          this.availablePosts.set(posts);
-        }
+        },
       });
   }
 

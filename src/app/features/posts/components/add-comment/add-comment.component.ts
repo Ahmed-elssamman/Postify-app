@@ -12,7 +12,6 @@ import {
 } from '@angular/forms/signals';
 import { Comment } from '../../models/comment.model';
 import { AddCommentFormValue, CreateComment } from '../../models/create-comment.model';
-import { Post } from '../../models/post.model';
 import { PostsService } from '../../services/posts.service';
 
 
@@ -28,7 +27,6 @@ export class AddCommentComponent {
   private readonly postsService = inject(PostsService);
   private readonly toastr = inject(ToastrService);
 
-  readonly posts = input.required<Post[]>();
   readonly currentPostId = input.required<number>();
   readonly commentCreated = output<Comment>();
 
@@ -40,7 +38,6 @@ export class AddCommentComponent {
   });
 
   readonly commentForm = form(this.commentModel, (path) => {
-    required(path.postId, { message: 'Please select a post.' });
     required(path.name, { message: 'Name is required.' });
     minLength(path.name, 2, { message: 'Name must be at least 2 characters.' });
     required(path.email, { message: 'Email is required.' });
@@ -78,7 +75,7 @@ export class AddCommentComponent {
       this.commentCreated.emit(comment);
       this.commentForm().reset();
       this.commentModel.set({
-        postId: value.postId,
+        postId: String(this.currentPostId()),
         name: '',
         email: '',
         body: '',
