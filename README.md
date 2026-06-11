@@ -4,7 +4,7 @@ Postify is a production-style Angular 21 social feed application backed by JSONP
 
 ## Features
 
-- Browse the first 50 posts in a responsive editorial card grid
+- Browse the  posts in a responsive editorial card grid
 - Search posts by title with live signal-based filtering
 - Open post details and load comments for a selected post
 - Create a new post with Signal Forms validation
